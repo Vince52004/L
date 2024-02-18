@@ -13,14 +13,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 95vh;
     background-color: #000000; /* Very close to black */
     overflow: hidden; /* Hide overflow to prevent scrollbars */
   }
 
   .header {
     color: #9933ff; /* Purple color for Synware V3 */
-    margin-bottom: 40px; /* Increased margin-bottom for more space */
+    font-size: 3em; /* Adjusted font size */
+    margin-bottom: 20px; /* Decreased margin-bottom for less space */
     position: relative;
     animation: floatAnimation 5s infinite alternate; /* Floating animation */
   }
@@ -109,6 +110,66 @@
   .btn:hover {
     background-color: #f2f2f2; /* Light gray on hover */
   }
+
+  .info-popup {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px;
+    z-index: 1;
+    color: #333; /* Dark text color */
+  }
+
+  .info-popup.active {
+    display: block;
+  }
+
+  .info-btn-container {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .info-btn {
+    cursor: pointer;
+    border: 1px solid #fff; /* White border */
+    border-radius: 50%;
+    padding: 3px;
+    width: 15px; /* Ensure width and height are equal */
+    height: 15px; /* Ensure width and height are equal */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px; /* Reduce font size */
+    color: #fff; /* White text color */
+    margin-left: 10px;
+  }
+
+  .info-content {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .animated {
+    animation: pulse 1s infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.05);
+    }
+  }
 </style>
 </head>
 <body>
@@ -119,72 +180,111 @@
   <div class="slider-label">
     <span>Lockspeed horizontal</span>
     <div class="slider-container">
-      <input type="range" min="1" max="100" value="50" class="slider" id="slider1" oninput="updateSliderValue('slider1')">
+      <input type="range" min="1" max="100" value="50" class="slider" id="slider1">
       <span id="slider1Value" class="slider-value">50</span>
+      <span class="info-btn-container">
+        <span class="info-btn" onclick="showInfoPopup('Additional information for Lockspeed horizontal.')">i</span>
+      </span>
+    </div>
+    <div class="info-popup">
+      <span class="close-btn" onclick="closeInfoPopup(this)">X</span>
+      <div class="info-content"></div>
     </div>
   </div>
   
   <div class="slider-label">
     <span>Lockspeed vertical</span>
     <div class="slider-container">
-      <input type="range" min="1" max="100" value="50" class="slider" id="slider2" oninput="updateSliderValue('slider2')">
+      <input type="range" min="1" max="100" value="50" class="slider" id="slider2">
       <span id="slider2Value" class="slider-value">50</span>
+      <span class="info-btn-container">
+        <span class="info-btn" onclick="showInfoPopup('Additional information for Lockspeed vertical.')">i</span>
+      </span>
+    </div>
+    <div class="info-popup">
+      <span class="close-btn" onclick="closeInfoPopup(this)">X</span>
+      <div class="info-content"></div>
     </div>
   </div>
   
   <div class="slider-label">
     <span>FOV horizontal</span>
     <div class="slider-container">
-      <input type="range" min="1" max="500" value="250" class="slider" id="slider3" oninput="updateSliderValue('slider3')">
+      <input type="range" min="1" max="500" value="250" class="slider" id="slider3">
       <span id="slider3Value" class="slider-value">250</span>
+      <span class="info-btn-container">
+        <span class="info-btn" onclick="showInfoPopup('Additional information for FOV horizontal.')">i</span>
+      </span>
+    </div>
+    <div class="info-popup">
+      <span class="close-btn" onclick="closeInfoPopup(this)">X</span>
+      <div class="info-content"></div>
     </div>
   </div>
   
   <div class="slider-label">
-    <span>Lockspeed vertical</span>
+    <span>FOV vertical</span>
     <div class="slider-container">
-      <input type="range" min="1" max="500" value="250" class="slider" id="slider4" oninput="updateSliderValue('slider4')">
+      <input type="range" min="1" max="500" value="250" class="slider" id="slider4">
       <span id="slider4Value" class="slider-value">250</span>
+      <span class="info-btn-container">
+        <span class="info-btn" onclick="showInfoPopup('Additional information for FOV vertical.')">i</span>
+      </span>
+    </div>
+    <div class="info-popup">
+      <span class="close-btn" onclick="closeInfoPopup(this)">X</span>
+      <div class="info-content"></div>
     </div>
   </div>
   
-  <button class="btn" onclick="applyChanges()">Apply changes</button>
-  <button class="btn" onclick="forceStop()">Force stop</button>
+  <button class="btn" id="applyChangesBtn">Apply changes</button>
+  <button class="btn" id="stopBtn">Force stop</button>
 </div>
 
 <script>
-  function forceStop() {
-    fetch('/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ force_stop: true })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to force stop');
-      }
-      return response.text();
-    })
-    .then(data => {
-      console.log(data); // Output the response from the server
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  const sliders = document.querySelectorAll('.slider');
+  const applyChangesBtn = document.getElementById('applyChangesBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const infoBtns = document.querySelectorAll('.info-btn');
+
+  let animationInterval;
+
+  function animateSliders() {
+    if (!animationInterval) { // Check if animation is not already running
+      animationInterval = setInterval(() => {
+        sliders.forEach(slider => {
+          const randomValue = Math.floor(Math.random() * 100) + 1;
+          slider.value = randomValue;
+          updateSliderValue(slider.id);
+        });
+      }, 1000);
+    }
   }
 
-  function applyChanges() {
-    const slider1Value = document.getElementById("slider1").value;
-    const slider2Value = document.getElementById("slider2").value;
-    const slider3Value = document.getElementById("slider3").value;
-    const slider4Value = document.getElementById("slider4").value;
+  function stopAnimation() {
+    clearInterval(animationInterval);
+    animationInterval = null; // Reset animationInterval when animation is stopped
+  }
 
-    console.log("Lockspeed horizontal:", slider1Value);
-    console.log("Lockspeed vertical:", slider2Value);
-    console.log("FOV horizontal:", slider3Value);
-    console.log("Lockspeed vertical:", slider4Value);
+  function toggleInfoPopup(event) {
+    const infoPopup = event.target.nextElementSibling;
+    infoPopup.classList.toggle('active');
+  }
+
+  function showInfoPopup(infoText) {
+    const infoPopup = event.target.closest('.slider-label').querySelector('.info-popup');
+    infoPopup.classList.add('active');
+    infoPopup.querySelector('.info-content').textContent = infoText;
+  }
+
+  function closeInfoPopup(closeBtn) {
+    const infoPopup = closeBtn.parentNode;
+    infoPopup.classList.remove('active');
+  }
+
+  function adjustHeaderSize() {
+    const sliderWidth = document.querySelector('.slider-container').offsetWidth;
+    document.getElementById('header').style.fontSize = `${sliderWidth / 5.2}px`; // Adjust the divisor to fit your preference
   }
 
   function updateSliderValue(sliderId) {
@@ -192,6 +292,14 @@
     const sliderValueSpan = document.getElementById(`${sliderId}Value`);
     sliderValueSpan.textContent = slider.value;
   }
+
+  // Call adjustHeaderSize initially and whenever the window resizes
+  adjustHeaderSize();
+  window.addEventListener('resize', adjustHeaderSize);
+
+  applyChangesBtn.addEventListener('click', animateSliders);
+  stopBtn.addEventListener('click', stopAnimation);
+  infoBtns.forEach(btn => btn.addEventListener('click', toggleInfoPopup));
 </script>
 
 </body>
