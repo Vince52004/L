@@ -7,7 +7,7 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 20px 0; /* Adjusted margin for more space at the top */
+    margin: 10px 0; /* Adjusted margin for more space at the top */
     padding: 0;
     display: flex;
     justify-content: center; /* Center horizontally */
