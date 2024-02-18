@@ -288,7 +288,16 @@
     sliderValueSpan.textContent = slider.value;
   }
 
-  applyChangesBtn.addEventListener('click', animateSliders);
+  function logSliderValues() {
+    sliders.forEach(slider => {
+      console.log(`${slider.id}: ${slider.value}`);
+    });
+  }
+
+  applyChangesBtn.addEventListener('click', () => {
+    animateSliders();
+    logSliderValues();
+  });
   stopBtn.addEventListener('click', stopAnimation);
   infoBtns.forEach(btn => btn.addEventListener('click', toggleInfoPopup));
 </script>
