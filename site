@@ -264,7 +264,6 @@
   function stopAnimation() {
     clearInterval(animationInterval);
     animationInterval = null; // Reset animationInterval when animation is stopped
-    console.log('exit'); // Print "exit" when animation is stopped
   }
 
   function toggleInfoPopup(event) {
@@ -283,23 +282,31 @@
     infoPopup.classList.remove('active');
   }
 
+  function adjustHeaderSize() {
+    const sliderWidth = document.querySelector('.slider-container').offsetWidth;
+    document.getElementById('header').style.fontSize = `${sliderWidth / 5.2}px`; // Adjust the divisor to fit your preference
+  }
+
   function updateSliderValue(sliderId) {
     const slider = document.getElementById(sliderId);
     const sliderValueSpan = document.getElementById(`${sliderId}Value`);
     sliderValueSpan.textContent = slider.value;
   }
 
-  function logSliderValues() {
-    sliders.forEach(slider => {
-      console.log(`${slider.id}: ${slider.value}`);
-    });
-  }
+  // Call adjustHeaderSize initially and whenever the window resizes
+  adjustHeaderSize();
+  window.addEventListener('resize', adjustHeaderSize);
 
-  applyChangesBtn.addEventListener('click', () => {
-    animateSliders();
-    logSliderValues();
+  applyChangesBtn.addEventListener('click', function() {
+    console.log("Changes applied");
+    // Additional code to send message to Python can be added here
+    animateSliders(); // Call the function to animate sliders
   });
-  stopBtn.addEventListener('click', stopAnimation);
+  stopBtn.addEventListener('click', function() {
+    console.log("Force stop clicked");
+    // Additional code to send message to Python can be added here
+    stopAnimation(); // Call the function to stop animation
+  });
   infoBtns.forEach(btn => btn.addEventListener('click', toggleInfoPopup));
 </script>
 
