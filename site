@@ -264,6 +264,7 @@
   function stopAnimation() {
     clearInterval(animationInterval);
     animationInterval = null; // Reset animationInterval when animation is stopped
+    console.log('exit'); // Print "exit" when animation is stopped
   }
 
   function toggleInfoPopup(event) {
