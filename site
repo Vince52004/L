@@ -13,7 +13,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 95vh;
     background-color: #000000; /* Very close to black */
     overflow: hidden; /* Hide overflow to prevent scrollbars */
   }
