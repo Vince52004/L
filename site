@@ -282,20 +282,11 @@
     infoPopup.classList.remove('active');
   }
 
-  function adjustHeaderSize() {
-    const sliderWidth = document.querySelector('.slider-container').offsetWidth;
-    document.getElementById('header').style.fontSize = `${sliderWidth / 5.2}px`; // Adjust the divisor to fit your preference
-  }
-
   function updateSliderValue(sliderId) {
     const slider = document.getElementById(sliderId);
     const sliderValueSpan = document.getElementById(`${sliderId}Value`);
     sliderValueSpan.textContent = slider.value;
   }
-
-  // Call adjustHeaderSize initially and whenever the window resizes
-  adjustHeaderSize();
-  window.addEventListener('resize', adjustHeaderSize);
 
   applyChangesBtn.addEventListener('click', animateSliders);
   stopBtn.addEventListener('click', stopAnimation);
