@@ -13,7 +13,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 95vh;
+    height: 80vh;
     background-color: #000000; /* Very close to black */
     overflow: hidden; /* Hide overflow to prevent scrollbars */
   }
@@ -132,40 +132,27 @@
     </div>
   </div>
   
-  <!-- Add other sliders as needed -->
+  <div class="slider-label">
+    <span>FOV horizontal</span>
+    <div class="slider-container">
+      <input type="range" min="1" max="500" value="250" class="slider" id="slider3" oninput="updateSliderValue('slider3')">
+      <span id="slider3Value" class="slider-value">250</span>
+    </div>
+  </div>
   
-  <button class="btn" id="startBtn" onclick="applyChanges()">Apply changes</button>
-  <button class="btn" id="stopBtn" onclick="forceStop()">Force stop</button>
+  <div class="slider-label">
+    <span>Lockspeed vertical</span>
+    <div class="slider-container">
+      <input type="range" min="1" max="500" value="250" class="slider" id="slider4" oninput="updateSliderValue('slider4')">
+      <span id="slider4Value" class="slider-value">250</span>
+    </div>
+  </div>
+  
+  <button class="btn" onclick="applyChanges()">Apply changes</button>
+  <button class="btn" onclick="forceStop()">Force stop</button>
 </div>
 
 <script>
-  function applyChanges() {
-    const slidersData = {};
-    document.querySelectorAll('.slider').forEach(slider => {
-      slidersData[slider.id] = slider.value;
-    });
-
-    fetch('/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(slidersData)
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to apply changes');
-      }
-      return response.text();
-    })
-    .then(data => {
-      console.log(data); // Output the response from the server
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  }
-
   function forceStop() {
     fetch('/submit', {
       method: 'POST',
@@ -186,6 +173,18 @@
     .catch(error => {
       console.error('Error:', error);
     });
+  }
+
+  function applyChanges() {
+    const slider1Value = document.getElementById("slider1").value;
+    const slider2Value = document.getElementById("slider2").value;
+    const slider3Value = document.getElementById("slider3").value;
+    const slider4Value = document.getElementById("slider4").value;
+
+    console.log("Lockspeed horizontal:", slider1Value);
+    console.log("Lockspeed vertical:", slider2Value);
+    console.log("FOV horizontal:", slider3Value);
+    console.log("Lockspeed vertical:", slider4Value);
   }
 
   function updateSliderValue(sliderId) {
