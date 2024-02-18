@@ -26,7 +26,7 @@
 
   .header {
     color: #9933ff; /* Purple color for Synware V3 */
-    margin-bottom: 40px; /* Increased margin-bottom for more space */
+    margin-bottom: 20px; /* Increased margin-bottom for more space */
     margin-top: 10px;
     position: relative;
     animation: floatAnimation 5s infinite alternate; /* Floating animation */
